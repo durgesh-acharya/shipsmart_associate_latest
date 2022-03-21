@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shipsmart_associate/models/associate.dart';
 
 import 'package:shipsmart_associate/screens/loginscreen.dart';
 import 'package:http/http.dart' as http;
@@ -20,7 +21,7 @@ class _DashBoardState extends State<DashBoard> {
 
   int associateid;
   bool _piindicator = false;
-  List datalist;
+  List assodata = [];
  
 
   
@@ -45,15 +46,19 @@ class _DashBoardState extends State<DashBoard> {
     final String url = "http://shipsmart-env.eba-4nc5kenf.us-east-2.elasticbeanstalk.com/associate/alldetailsbyid/${id}";
     var response = await http.get(Uri.parse(url));
     if(response.statusCode == 200){
-      List jsonresponse = jsonDecode(response.body);
-      Map<String,dynamic> data = jsonresponse[0]['data'];
-    //  var data = jsonresponse[0]['data'] as List;
-    List<Associates> associatedata;
-
-     data.forEach((k, v) => associatedata.add(Associates()));
-    
-     print(associatedata);
+      Map jsonresponse = jsonDecode(response.body) ;
+    // print(jsonresponse);
+    var associatename = jsonresponse['associatefirmname'] ;
+    var associatemobile = jsonresponse['associatemobile'] ;
+ 
+     List associatedetaillist = [associatename,associatemobile];
+      setState(() {
+        assodata = associatedetaillist;
+      });
      
+     //print(assodata);
+     //print(assodata[0]);
+     //print(assodata[1]);
     }
   
 
@@ -125,7 +130,7 @@ class _DashBoardState extends State<DashBoard> {
     );
   }
 
-  Widget buildNaigationDrawer(){
+  Widget buildNaigationDrawer(String name , String mob){
     return Drawer(
       child: Column(
         children: [
@@ -138,11 +143,11 @@ class _DashBoardState extends State<DashBoard> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top:28.0),
-                  child: Text("name",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 18),),
+                  child: Text(name,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 18),),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top:10.0),
-                  child: Text("id",style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 14),),
+                  child: Text(mob,style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 14),),
                 )
               ],
             ),
@@ -180,7 +185,7 @@ class _DashBoardState extends State<DashBoard> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getAssociateid().whenComplete(() => getAssociateDetail(associateid));
+    getAssociateid().whenComplete(() =>  getAssociateDetail(associateid));
     
     
   }
@@ -200,7 +205,7 @@ class _DashBoardState extends State<DashBoard> {
         
         
       ),
-      drawer: buildNaigationDrawer(),
+      drawer: buildNaigationDrawer( assodata.length == 0 ? "  " : assodata[0],assodata.length == 0 ? "  " : assodata[1].toString()),
       body:  GestureDetector(child: Stack(children: [
           SingleChildScrollView(
             physics: AlwaysScrollableScrollPhysics(),
@@ -231,78 +236,3 @@ class _DashBoardState extends State<DashBoard> {
 
 }
 
-class Associates{
- int associateid;
-    int associatecoo;
-    int associatestate;
-    int associatecluster;
-    int associatetsm;
-    int associatesupportexe;
-    int associatefranchisee;
-    String associatefullname;
-    String associatefirmname;
-    String associateaddress;
-    String associateresiaddress;
-    int associatepincode;
-    String associatemobile;
-    String associateemail;
-    String associatepan;
-    String associategst;
-    String assciateadharfronturl;
-    String associateadharbackurl;
-    String associatepanurl;
-    String associatepicurl;
-    String associatepassword;
-    int associateactive;
-    int fromcooid;
-    String fromcooname;
-    int fromcoostateid;
-    int tsmid;
-    String tsmname;
-    int supportexeid;
-    String supportexename;
-    int franchiseeid;
-    String franchiseename;
-    int stateid;
-    String statename;
-    int clusterid;
-    String clustername;
-
-    Associates(
-     { this.associateid,
-        this.associatecoo,
-        this.associatestate,
-        this.associatecluster,
-        this.associatetsm,
-        this.associatesupportexe,
-        this.associatefranchisee,
-        this.associatefullname,
-        this.associatefirmname,
-        this.associateaddress,
-        this.associateresiaddress,
-        this.associatepincode,
-        this.associatemobile,
-        this.associateemail,
-        this.associatepan,
-        this.associategst,
-        this.assciateadharfronturl,
-        this.associateadharbackurl,
-        this.associatepanurl,
-        this.associatepicurl,
-        this.associatepassword,
-        this.associateactive,
-        this.fromcooid,
-        this.fromcooname,
-        this.fromcoostateid,
-        this.tsmid,
-        this.tsmname,
-        this.supportexeid,
-        this.supportexename,
-        this.franchiseeid,
-        this.franchiseename,
-        this.stateid,
-        this.statename,
-        this.clusterid,
-        this.clustername,
-     });
-}
